@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+#
+# Shared by every bazzite-niri variant. Adds niri + Dank Material Shell
+# (now branded "Dux Shell", package name still `dms`) on top of Bazzite
+# without touching Plasma: niri simply shows up as another session in SDDM.
+
+modules:
+  # 1. Core: niri compositor + the shell. Kept separate from the extras and
+  #    WITHOUT skip-unavailable, so the build fails loudly if either package
+  #    ever disappears from the COPRs instead of silently shipping without it.
+  - type: dnf
+    repos:
+      cleanup: true # don't leave the COPRs enabled in the final image
+      copr:
+        - duxlabs/dux # niri, quickshell, xwayland-satellite, matugen, dgop, cliphist...
+        - duxlabs/dms # dms (Dank Material Shell / Dux Shell), stable channel
+    install:
+      packages:
+        - niri
+        - dms
+        - quickshell
+        - xwayland-satellite
+      # niri's weak deps pull in a classic bar/notifier/locker stack.
+      # DMS replaces all of these, so keep them out to avoid double bars
+      # and fights over the notification D-Bus name.
+      exclude:
+        - waybar
+        - mako
+        - swaylock
+        - swayidle
+
+  # 2. Extras: things DMS widgets and niri integrations use. Optional, so a
+  #    renamed/missing package here won't break the daily build.
+  - type: dnf
+    repos:
+      cleanup: true
+      copr:
+        - duxlabs/dux
+    install:
+      skip-unavailable: true
+      packages:
+        # DMS companions
+        - matugen            # wallpaper-based Material You theming
+        - dgop               # CPU/GPU/RAM telemetry for widgets
+        - dsearch            # file search in the launcher
+        - cliphist           # clipboard history
+        - cava               # audio visualiser widget
+        - qt6-qtmultimedia   # system sound feedback
+        - i2c-tools          # DDC monitor brightness
+        - brightnessctl
+        - wl-clipboard
+        # niri session plumbing (Bazzite's KDE image doesn't ship these)
+        - xdg-desktop-portal-gnome # niri's preferred portal: screencasting, screenshots
+        - xdg-desktop-portal-gtk   # file pickers for GTK apps
+        - gnome-keyring            # Secret portal backend used by niri-portals.conf
+        # Usable fallbacks for niri's stock config (Mod+T / Mod+D)
+        - alacritty
+        - fuzzel
+
+  # 3. Config: start DMS automatically with niri (and only with niri),
+  #    plus a `ujust` helper for generating DMS-integrated niri config.
+  - type: files
+    files:
+      - source: system
+        destination: /
