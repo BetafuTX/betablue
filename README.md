@@ -1,3 +1,4 @@
+<img width="2048" height="2048" alt="blueb" src="https://github.com/user-attachments/assets/0f2beafd-a0c2-411d-9e08-2d8bd5d7c63d" />
 # bazzite-niri
 
 [Bazzite](https://github.com/ublue-os/bazzite) with the [niri](https://github.com/niri-wm/niri) scrolling-tiling compositor and [Dank Material Shell](https://duxlabs.dev) (now called **Dux Shell**; package name `dms`) pre-installed, built with [BlueBuild](https://blue-build.org).
